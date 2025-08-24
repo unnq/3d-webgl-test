@@ -1,7 +1,8 @@
+// main.js (ESM with import map in index.html)
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'; // if you use HDR
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -21,17 +22,17 @@ init();
 resize();
 window.addEventListener('resize', resize);
 
+// -------------------- init --------------------
 async function init() {
   if (!canvas) return;
   clock = new THREE.Clock();
 
-  // Safe renderer init (if WebGL is truly unavailable we show fallback & stop)
+  // Safe renderer init
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   } catch (e) {
     console.error('Three.js renderer init failed:', e);
-    if (fallback) fallback.hidden = false;
-    if (loading) loading.hidden = true;
+    showFallback(true);
     return;
   }
 
@@ -52,7 +53,7 @@ async function init() {
   controls.rotateSpeed = 0.5;
   controls.panSpeed = 0.6;
 
-  // Ground (optional)
+  // Ground (optional visual reference)
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(10, 64).rotateX(-Math.PI / 2),
     new THREE.ShadowMaterial({ opacity: 0.18 })
@@ -77,20 +78,22 @@ async function init() {
 
   animate();
 
-  // ✅ Hide overlays after the viewer is initialized
-  showLoading(false);
-  if (fallback) fallback.hidden = true;
+  // Viewer ready: hide all overlays
+  hideOverlays();
+  console.log('THREE r' + THREE.REVISION);
 }
 
+// -------------------- resize --------------------
 function resize() {
   if (!renderer || !camera) return;
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
   renderer.setSize(w, h, false);
-  camera.aspect = w / h;
+  camera.aspect = w / h || 1;
   camera.updateProjectionMatrix();
 }
 
+// -------------------- animate --------------------
 function animate() {
   requestAnimationFrame(animate);
   const dt = clock.getDelta();
@@ -100,6 +103,7 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+// -------------------- UI handlers --------------------
 async function onCardClick(e) {
   const btn = e.target.closest('.card');
   if (!btn) return;
@@ -110,6 +114,7 @@ async function onCardClick(e) {
   await loadModel(url, hdr);
 }
 
+// -------------------- env / model loading --------------------
 async function ensureEnv(hdrUrl) {
   if (envMap || !hdrUrl) return;
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -121,19 +126,22 @@ async function ensureEnv(hdrUrl) {
     texture.dispose();
   } catch (err) {
     console.warn('HDR load failed:', err);
+  } finally {
+    pmrem.dispose();
   }
+  // If toggle is on, apply immediately
+  if (toggleEnv?.checked) applyEnv(true);
 }
 
 async function loadModel(url, hdrUrl) {
   if (!url) return;
 
-  // ✅ Only show spinner during actual model load
   showLoading(true);
 
   try {
     await ensureEnv(hdrUrl);
 
-    // Clear prior model
+    // Remove previous
     if (modelRoot) {
       scene.remove(modelRoot);
       disposeHierarchy(modelRoot);
@@ -141,57 +149,66 @@ async function loadModel(url, hdrUrl) {
     }
 
     const loader = new GLTFLoader();
+    loader.setCrossOrigin('anonymous'); // help with cross-origin assets
     const gltf = await loader.loadAsync(url);
 
     modelRoot = gltf.scene || gltf.scenes?.[0];
     if (!modelRoot) throw new Error('No scene in glTF');
 
     centerAndScale(modelRoot, 1.8);
-
-    if (envMap && toggleEnv?.checked) applyEnv(true);
-
     scene.add(modelRoot);
 
+    // Animations
     if (gltf.animations?.length) {
       mixer = new THREE.AnimationMixer(modelRoot);
       gltf.animations.forEach(clip => mixer.clipAction(clip).play());
     } else {
       mixer = null;
     }
+
+    // Apply env if available/desired
+    if (envMap && toggleEnv?.checked) applyEnv(true);
+
   } catch (err) {
     console.error('Model load failed:', err);
     alert('Model failed to load. Check the console for details.');
   } finally {
-    // ✅ Always hide spinner when done (success or error)
     showLoading(false);
-    if (fallback) fallback.hidden = true;
   }
 }
 
+// -------------------- helpers --------------------
 function centerAndScale(object3D, targetSize = 2) {
-  // Compute bounding box
   const box = new THREE.Box3().setFromObject(object3D);
   const size = new THREE.Vector3(); box.getSize(size);
   const center = new THREE.Vector3(); box.getCenter(center);
 
-  // Recenter to origin
   object3D.position.sub(center);
 
-  // Uniform scale to targetSize
   const maxDim = Math.max(size.x, size.y, size.z);
   const scale = maxDim > 0 ? (targetSize / maxDim) : 1;
   object3D.scale.setScalar(scale);
 
-  // Move slightly up so it sits visually on ground
-  object3D.position.y -= (box.min.y * scale);
+  // Sit on ground visually
+  const newBox = new THREE.Box3().setFromObject(object3D);
+  object3D.position.y -= newBox.min.y;
 }
 
 function applyEnv(enabled) {
+  // Prefer scene.environment for PBR materials
+  scene.environment = enabled ? envMap : null;
+
+  // Also set per-material envMap for non-PBR/legacy cases
   if (!modelRoot) return;
   modelRoot.traverse(obj => {
-    if (obj.isMesh && obj.material && 'envMap' in obj.material) {
-      obj.material.envMap = enabled ? envMap : null;
-      obj.material.needsUpdate = true;
+    if (obj.isMesh && obj.material) {
+      const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+      mats.forEach(m => {
+        if ('envMap' in m) {
+          m.envMap = enabled ? envMap : null;
+          m.needsUpdate = true;
+        }
+      });
     }
   });
 }
@@ -200,11 +217,8 @@ function setWireframe(enabled) {
   if (!modelRoot) return;
   modelRoot.traverse(obj => {
     if (obj.isMesh && obj.material) {
-      if (Array.isArray(obj.material)) {
-        obj.material.forEach(m => m.wireframe = enabled);
-      } else {
-        obj.material.wireframe = enabled;
-      }
+      const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+      mats.forEach(m => { m.wireframe = enabled; });
     }
   });
 }
@@ -225,26 +239,18 @@ function disposeHierarchy(root) {
   });
 }
 
+// -------------------- overlay controls --------------------
 function showLoading(v) {
-  if (!loading) return;
-  loading.hidden = !v;
-  fallback.hidden = true;
+  if (loading) loading.style.display = v ? 'grid' : 'none';
+  if (fallback) fallback.style.display = 'none'; // never show the warning once initialized
 }
 
-// Better WebGL diagnostics
-(function () {
-  try {
-    const c = document.createElement('canvas');
-    const webgl2 = !!c.getContext('webgl2');
-    const webgl1 = !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
-    if (!webgl2 && !webgl1) {
-      if (fallback) fallback.hidden = false;
-      if (loading) loading.hidden = true;
-      console.error('WebGL not available. Check hardware acceleration, extensions, or chrome://gpu');
-    }
-  } catch (e) {
-    if (fallback) fallback.hidden = false;
-    if (loading) loading.hidden = true;
-    console.warn('WebGL probe threw:', e);
-  }
-})();
+function hideOverlays() {
+  if (loading) loading.style.display = 'none';
+  if (fallback) fallback.style.display = 'none';
+}
+
+function showFallback(v) {
+  if (fallback) fallback.style.display = v ? 'grid' : 'none';
+  if (loading) loading.style.display = 'none';
+}
