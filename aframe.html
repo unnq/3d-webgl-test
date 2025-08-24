@@ -39,6 +39,7 @@
     <!-- (2) Load a single-file GLB directly via URL -->
     <a-entity id="product"
               class="clickable"
+              link="href: ./aframe.html; title: A-Frame Demo; on: click"
               gltf-model="url(https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb)"
               position="0 1 -2"
               rotation="0 30 0"
@@ -49,6 +50,7 @@
     <!-- hotspot link feature -->
     <a-plane id="hotspot1"
          class="clickable"
+         link="href: ./aframe.html; title: A-Frame Demo; on: click"
          position="0 2 -2"
          width="0.9" height="0.3"
          material="color: #7aa2ff; shader: flat; opacity: 0.95"
