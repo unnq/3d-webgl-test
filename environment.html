@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>A-Frame Environment Test</title>
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <style>
+    html,body { margin:0; height:100%; background:#0b0c10; }
+    .note { position:fixed; right:10px; bottom:10px; color:#aab3c7;
+            font:14px/1.4 ui-sans-serif,system-ui; }
+  </style>
+</head>
+<body>
+  <a-scene background="color: #0b0c10" renderer="colorManagement: true; toneMapping: ACESFilmic;">
+    <!-- Assets -->
+    <a-assets>
+      <a-asset-item id="city" src="./assets/models/city_test.glb"></a-asset-item>
+    </a-assets>
+
+    <!-- Camera at human height -->
+    <a-entity id="rig" position="0 0 0">
+      <a-entity id="camera" position="0 1.6 0" camera look-controls wasd-controls></a-entity>
+    </a-entity>
+
+    <!-- Lights -->
+    <a-entity light="type: ambient; intensity: 0.35; color: #ffffff"></a-entity>
+    <a-entity light="type: directional; intensity: 1.2; color: #ffffff" position="2 4 3"></a-entity>
+
+    <!-- Environment GLB -->
+    <a-entity gltf-model="#city" position="0 0 0" scale="1 1 1"></a-entity>
+  </a-scene>
+
+  <div class="note">WASD to move • drag to look • ESC for mouse</div>
+</body>
+</html>
