@@ -5,70 +5,72 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>A-Frame Demo — Neon Gallery</title>
 
-  <!-- A-Frame core (latest stable) -->
+  <!-- A-Frame (stable) -->
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-
-  <!-- Animation mixer component (for glTF/GLB animations) -->
+  <!-- glTF animation mixer (safe to include; harmless if no animations) -->
   <script src="https://cdn.jsdelivr.net/npm/aframe-extras.animation-mixer@6.1.1/dist/aframe-extras.animation-mixer.min.js"></script>
 
   <style>
-    html,body { height:100%; margin:0; background:#0b0c10; }
-    .topbar {
-      position:fixed; inset:0 0 auto 0; height:56px;
-      display:flex; align-items:center; gap:14px; padding:0 14px;
-      background:rgba(11,12,16,0.65); backdrop-filter: blur(6px);
-      border-bottom:1px solid rgba(255,255,255,0.08); z-index:5; color:#e5ecff;
-    }
-    .topbar a { color:#e5ecff; text-decoration:none; opacity:.85 }
-    .topbar .spacer { flex:1 }
-    a-scene { height:100%; }
+    html, body { height:100%; margin:0; background:#0b0c10; }
+    .topbar { position:fixed; left:0; right:0; top:0; height:48px; display:flex; align-items:center; gap:12px; padding:0 12px;
+              background:rgba(11,12,16,.65); backdrop-filter:blur(6px); border-bottom:1px solid rgba(255,255,255,.08); z-index:5; color:#e5ecff; }
+    .topbar a { color:#e5ecff; text-decoration:none; opacity:.9 }
     .note { position:fixed; right:10px; bottom:10px; color:#aab3c7; font:14px/1.4 ui-sans-serif,system-ui; }
+    a-scene { height:100%; }
   </style>
 </head>
 <body>
   <div class="topbar">
-    <a href="index.html">← Back</a>
+    <a href="./">← Back</a>
     <strong>A-Frame Demo</strong>
-    <div class="spacer"></div>
-    <a href="#ar">Enter AR via XR button</a>
   </div>
 
-  <!-- Simple A-Frame scene with AR/VR button, lights, floor and a GLB model -->
-  <a-scene renderer="colorManagement: true"
-           xr-mode-ui="XRMode: xr">
+  <!-- Minimal, deterministic scene -->
+  <a-scene renderer="colorManagement: true" xr-mode-ui="XRMode: xr">
+    <!-- (1) Box sanity check so you instantly see *something* render -->
+    <a-box id="debugBox" position="-1 1 -3" depth="1" height="1" width="1" color="#4CC3D9"></a-box>
 
-    <!-- Preload assets (you can swap to your own GLB later) -->
-    <a-assets timeout="15000">
-      <a-asset-item id="model" src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb"></a-asset-item>
-    </a-assets>
+    <!-- (2) Load a single-file GLB directly via URL -->
+    <a-entity id="product"
+              gltf-model="url(https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb)"
+              position="0 1 -2"
+              rotation="0 30 0"
+              scale="2 2 2"
+              animation-mixer>
+    </a-entity>
 
-    <!-- Camera / controls (mouse drag to look, WASD to move) -->
+    <!-- Camera rig (WASD + mouse to look) -->
     <a-entity id="rig" position="0 1.6 4">
       <a-entity camera look-controls wasd-controls></a-entity>
     </a-entity>
 
     <!-- Lights -->
     <a-entity light="type: ambient; intensity: 0.35; color: #ffffff"></a-entity>
-    <a-entity light="type: directional; intensity: 1.6; castShadow: true" position="2 4 3"></a-entity>
+    <a-entity light="type: directional; intensity: 1.6; color: #ffffff" position="2 4 3"></a-entity>
 
-    <!-- Model with animation support (plays any embedded clips) -->
-    <a-entity id="product"
-              gltf-model="#model"
-              position="0 0 -2"
-              rotation="0 30 0"
-              animation-mixer>
-    </a-entity>
+    <!-- Simple ground + sky (visible on desktop; auto-hidden by XR anyway) -->
+    <a-circle radius="12" color="#0f1117" rotation="-90 0 0" position="0 0 -2"></a-circle>
+    <a-sky color="#0f1117"></a-sky>
 
-    <!-- Ground disk (visible in VR; hidden in AR so it doesn’t fight with real world) -->
-    <a-circle radius="12" color="#0f1117" rotation="-90 0 0"
-              material="shader: flat; opacity: 0.9"
-              hide-in-ar-mode
-              position="0 0 -2"></a-circle>
-
-    <!-- Sky backdrop (hidden in AR) -->
-    <a-sky color="#0f1117" hide-in-ar-mode></a-sky>
+    <!-- (3) Helpful console logs -->
+    <a-entity id="logger"
+      script="data:dummy"></a-entity>
   </a-scene>
 
-  <div class="note">Tip: drag to look, WASD to move • XR button appears if your device supports WebXR</div>
+  <div class="note">Drag to look • WASD to move • Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> for the A-Frame Inspector.</div>
+
+  <script>
+    // (3) Log load status / errors so we know exactly what's happening.
+    const product = document.getElementById('product');
+    product.addEventListener('model-loaded', e => {
+      console.log('[A-Frame] model-loaded:', e.detail);
+      // Centering/scale safety (optional): ensure it’s in front of the camera
+      product.object3D.position.set(0, 1, -2);
+      product.object3D.scale.setScalar(2);
+    });
+    product.addEventListener('model-error', e => {
+      console.error('[A-Frame] model-error:', e.detail);
+    });
+  </script>
 </body>
 </html>
