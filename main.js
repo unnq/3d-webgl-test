@@ -1,4 +1,4 @@
-// main.js (ESM with import map in index.html)
+// main.js (ESM + import map in index.html)
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -27,7 +27,6 @@ async function init() {
   if (!canvas) return;
   clock = new THREE.Clock();
 
-  // Safe renderer init
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   } catch (e) {
@@ -53,7 +52,7 @@ async function init() {
   controls.rotateSpeed = 0.5;
   controls.panSpeed = 0.6;
 
-  // Ground (optional visual reference)
+  // Optional ground reference
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(10, 64).rotateX(-Math.PI / 2),
     new THREE.ShadowMaterial({ opacity: 0.18 })
@@ -78,18 +77,29 @@ async function init() {
 
   animate();
 
-  // Viewer ready: hide all overlays
+  // Hide overlays now (we’ll only show spinner during loads)
   hideOverlays();
+
   console.log('THREE r' + THREE.REVISION);
+
+  // ✅ Auto-load the first card so you instantly see a model
+  const first = document.querySelector('#galleryCards .card');
+  if (first) {
+    const url = first.getAttribute('data-model');
+    const hdr = first.getAttribute('data-env');
+    const name = first.getAttribute('data-name') || '3D Viewer';
+    if (title) title.textContent = name;
+    await loadModel(url, hdr);
+  }
 }
 
 // -------------------- resize --------------------
 function resize() {
   if (!renderer || !camera) return;
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
+  const w = canvas.clientWidth || canvas.parentElement.clientWidth || 800;
+  const h = canvas.clientHeight || 500;
   renderer.setSize(w, h, false);
-  camera.aspect = w / h || 1;
+  camera.aspect = w / Math.max(1, h);
   camera.updateProjectionMatrix();
 }
 
@@ -129,7 +139,6 @@ async function ensureEnv(hdrUrl) {
   } finally {
     pmrem.dispose();
   }
-  // If toggle is on, apply immediately
   if (toggleEnv?.checked) applyEnv(true);
 }
 
@@ -141,7 +150,7 @@ async function loadModel(url, hdrUrl) {
   try {
     await ensureEnv(hdrUrl);
 
-    // Remove previous
+    // Remove previous model
     if (modelRoot) {
       scene.remove(modelRoot);
       disposeHierarchy(modelRoot);
@@ -150,6 +159,7 @@ async function loadModel(url, hdrUrl) {
 
     const loader = new GLTFLoader();
     loader.setCrossOrigin('anonymous'); // help with cross-origin assets
+
     const gltf = await loader.loadAsync(url);
 
     modelRoot = gltf.scene || gltf.scenes?.[0];
@@ -158,7 +168,6 @@ async function loadModel(url, hdrUrl) {
     centerAndScale(modelRoot, 1.8);
     scene.add(modelRoot);
 
-    // Animations
     if (gltf.animations?.length) {
       mixer = new THREE.AnimationMixer(modelRoot);
       gltf.animations.forEach(clip => mixer.clipAction(clip).play());
@@ -166,7 +175,6 @@ async function loadModel(url, hdrUrl) {
       mixer = null;
     }
 
-    // Apply env if available/desired
     if (envMap && toggleEnv?.checked) applyEnv(true);
 
   } catch (err) {
@@ -189,16 +197,14 @@ function centerAndScale(object3D, targetSize = 2) {
   const scale = maxDim > 0 ? (targetSize / maxDim) : 1;
   object3D.scale.setScalar(scale);
 
-  // Sit on ground visually
+  // Recompute and sit on the ground
   const newBox = new THREE.Box3().setFromObject(object3D);
   object3D.position.y -= newBox.min.y;
 }
 
 function applyEnv(enabled) {
-  // Prefer scene.environment for PBR materials
   scene.environment = enabled ? envMap : null;
 
-  // Also set per-material envMap for non-PBR/legacy cases
   if (!modelRoot) return;
   modelRoot.traverse(obj => {
     if (obj.isMesh && obj.material) {
@@ -242,14 +248,12 @@ function disposeHierarchy(root) {
 // -------------------- overlay controls --------------------
 function showLoading(v) {
   if (loading) loading.style.display = v ? 'grid' : 'none';
-  if (fallback) fallback.style.display = 'none'; // never show the warning once initialized
+  if (fallback) fallback.style.display = 'none'; // never show warning once initialized
 }
-
 function hideOverlays() {
   if (loading) loading.style.display = 'none';
   if (fallback) fallback.style.display = 'none';
 }
-
 function showFallback(v) {
   if (fallback) fallback.style.display = v ? 'grid' : 'none';
   if (loading) loading.style.display = 'none';
