@@ -29,15 +29,28 @@
   <a-scene renderer="colorManagement: true" xr-mode-ui="XRMode: xr">
     <!-- (1) Box sanity check so you instantly see *something* render -->
     <a-box id="debugBox" position="-1 1 -3" depth="1" height="1" width="1" color="#4CC3D9"></a-box>
+    <a-entity id="mouseCursor"
+          cursor="rayOrigin: mouse"
+          raycaster="objects: .clickable; far: 20">
+    </a-entity>
 
     <!-- (2) Load a single-file GLB directly via URL -->
     <a-entity id="product"
+              class="clickable"
               gltf-model="url(https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb)"
               position="0 1 -2"
               rotation="0 30 0"
               scale="2 2 2"
               animation-mixer>
     </a-entity>
+
+    <a-plane id="hotspot1"
+         class="clickable"
+         position="0 2 -2"
+         width="0.9" height="0.3"
+         material="color: #7aa2ff; shader: flat; opacity: 0.95"
+         text="value: Visit Neon Gallery; align: center; color: #0b0c10; width: 4">
+    </a-plane>
 
     <!-- Camera rig (WASD + mouse to look) -->
     <a-entity id="rig" position="0 1.6 4">
@@ -59,6 +72,34 @@
 
   <div class="note">Drag to look • WASD to move • Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> for the A-Frame Inspector.</div>
 
+<script>
+  // Open pages from inside the scene
+  const product = document.getElementById('product');
+  const hotspot = document.getElementById('hotspot1');
+
+  // Click = open URL (use '_self' for same tab, '_blank' for new tab)
+  product.addEventListener('click', () => {
+    window.open('./', '_self');               // go back to main gallery page
+  });
+  hotspot.addEventListener('click', () => {
+    window.open('https://your-domain.com', '_blank'); // external link
+  });
+
+  // Simple hover feedback (scale & cursor)
+  function hoverOn(el) {
+    el.object3D.scale.set(1.05, 1.05, 1.05);
+    document.body.style.cursor = 'pointer';
+  }
+  function hoverOff(el) {
+    el.object3D.scale.set(1, 1, 1);
+    document.body.style.cursor = '';
+  }
+  [product, hotspot].forEach(el => {
+    el.addEventListener('mouseenter', () => hoverOn(el));
+    el.addEventListener('mouseleave', () => hoverOff(el));
+  });
+</script>
+  
   <script>
     // (3) Log load status / errors so we know exactly what's happening.
     const product = document.getElementById('product');
