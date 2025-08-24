@@ -25,6 +25,7 @@ async function init() {
   if (!canvas) return;
   clock = new THREE.Clock();
 
+  // Safe renderer init (if WebGL is truly unavailable we show fallback & stop)
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   } catch (e) {
@@ -51,49 +52,34 @@ async function init() {
   controls.rotateSpeed = 0.5;
   controls.panSpeed = 0.6;
 
-  // ...lights, listeners, etc...
-
-  animate();
-
-  // ✅ Hide overlays now; we’ll only show during model loads
-  showLoading(false);
-  if (fallback) fallback.hidden = true;
-}
-  // Ground reference
+  // Ground (optional)
   const ground = new THREE.Mesh(
-    new THREE.CircleGeometry(10, 64).rotateX(-Math.PI/2),
+    new THREE.CircleGeometry(10, 64).rotateX(-Math.PI / 2),
     new THREE.ShadowMaterial({ opacity: 0.18 })
   );
   ground.receiveShadow = true;
-  ground.position.y = 0;
-  ground.visible = false; // purely stylistic; toggle if you add actual shadows
+  ground.visible = false;
   scene.add(ground);
 
-  // Lighting
+  // Lights
   const key = new THREE.DirectionalLight(0xffffff, 2.0);
   key.position.set(4, 6, 4);
-  scene.add(key);
-  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  scene.add(key, new THREE.AmbientLight(0xffffff, 0.35));
 
-  // Optional: environment HDR (nice reflections) — lazy loaded on first model load
   envMap = null;
 
-  // Wireframe toggle
+  // UI listeners
   if (toggleWire) toggleWire.addEventListener('change', () => setWireframe(toggleWire.checked));
-
-  // Auto-rotate toggle
-  if (toggleRotate) toggleRotate.addEventListener('change', () => {
-    autoRotate = toggleRotate.checked;
-  });
-
-  // Env toggle
+  if (toggleRotate) toggleRotate.addEventListener('change', () => { autoRotate = toggleRotate.checked; });
   if (toggleEnv) toggleEnv.addEventListener('change', () => applyEnv(toggleEnv.checked));
-
-  // Card events
   const cards = document.getElementById('galleryCards');
   if (cards) cards.addEventListener('click', onCardClick);
 
   animate();
+
+  // ✅ Hide overlays after the viewer is initialized
+  showLoading(false);
+  if (fallback) fallback.hidden = true;
 }
 
 function resize() {
@@ -140,12 +126,14 @@ async function ensureEnv(hdrUrl) {
 
 async function loadModel(url, hdrUrl) {
   if (!url) return;
+
+  // ✅ Only show spinner during actual model load
   showLoading(true);
 
   try {
     await ensureEnv(hdrUrl);
 
-    // Clear prior
+    // Clear prior model
     if (modelRoot) {
       scene.remove(modelRoot);
       disposeHierarchy(modelRoot);
@@ -155,29 +143,28 @@ async function loadModel(url, hdrUrl) {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(url);
 
-    modelRoot = gltf.scene || gltf.scenes[0];
+    modelRoot = gltf.scene || gltf.scenes?.[0];
     if (!modelRoot) throw new Error('No scene in glTF');
 
-    // Optional: center and scale
     centerAndScale(modelRoot, 1.8);
 
     if (envMap && toggleEnv?.checked) applyEnv(true);
 
     scene.add(modelRoot);
 
-    // Animations
-    if (gltf.animations && gltf.animations.length) {
+    if (gltf.animations?.length) {
       mixer = new THREE.AnimationMixer(modelRoot);
       gltf.animations.forEach(clip => mixer.clipAction(clip).play());
     } else {
       mixer = null;
     }
-
   } catch (err) {
-    console.error(err);
+    console.error('Model load failed:', err);
     alert('Model failed to load. Check the console for details.');
   } finally {
+    // ✅ Always hide spinner when done (success or error)
     showLoading(false);
+    if (fallback) fallback.hidden = true;
   }
 }
 
