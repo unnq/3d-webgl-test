@@ -84,29 +84,36 @@
   <div class="note">Drag to look • WASD to move • Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> for the A-Frame Inspector.</div>
 
 <script>
-  // Open pages from inside the scene
-  const product = document.getElementById('product');
-  const hotspot = document.getElementById('hotspot1');
+  const product = document.getElementById('product');   // your GLB entity
+  const hotspot = document.getElementById('hotspot1');  // optional
 
-  // Click = open URL (use '_self' for same tab, '_blank' for new tab)
-  product.addEventListener('click', () => {
-    window.open('./', '_self');               // go back to main gallery page
-  });
-  hotspot.addEventListener('click', () => {
-    window.open('https://unnq.github.io/3d-webgl-test/', '_blank'); // external link
-  });
+  // keep original scales per element
+  const baseScale = new WeakMap();
 
-  // Simple hover feedback (scale & cursor)
-  function hoverOn(el) {
-    el.object3D.scale.set(1.05, 1.05, 1.05);
+  function ensureBase(el) {
+    if (!baseScale.has(el)) {
+      baseScale.set(el, el.object3D.scale.clone());
+    }
+  }
+
+  function hoverOn(el, factor = 1.05) {
+    ensureBase(el);
+    const base = baseScale.get(el);
+    el.object3D.scale.set(base.x * factor, base.y * factor, base.z * factor);
     document.body.style.cursor = 'pointer';
   }
+
   function hoverOff(el) {
-    el.object3D.scale.set(1, 1, 1);
+    const base = baseScale.get(el);
+    if (base) el.object3D.scale.copy(base);
     document.body.style.cursor = '';
   }
+
   [product, hotspot].forEach(el => {
-    el.addEventListener('mouseenter', () => hoverOn(el));
+    if (!el) return;
+    // If the model loads asynchronously, capture base AFTER it’s in the scene
+    el.addEventListener('model-loaded', () => baseScale.set(el, el.object3D.scale.clone()));
+    el.addEventListener('mouseenter', () => hoverOn(el, 1.05));
     el.addEventListener('mouseleave', () => hoverOff(el));
   });
 </script>
