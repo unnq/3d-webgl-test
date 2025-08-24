@@ -25,7 +25,15 @@ async function init() {
   if (!canvas) return;
   clock = new THREE.Clock();
 
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  } catch (e) {
+    console.error('Three.js renderer init failed:', e);
+    if (fallback) fallback.hidden = false;
+    if (loading) loading.hidden = true;
+    return;
+  }
+
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
@@ -43,6 +51,14 @@ async function init() {
   controls.rotateSpeed = 0.5;
   controls.panSpeed = 0.6;
 
+  // ...lights, listeners, etc...
+
+  animate();
+
+  // ✅ Hide overlays now; we’ll only show during model loads
+  showLoading(false);
+  if (fallback) fallback.hidden = true;
+}
   // Ground reference
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(10, 64).rotateX(-Math.PI/2),
@@ -228,14 +244,20 @@ function showLoading(v) {
   fallback.hidden = true;
 }
 
-// Progressive enhancement: detect WebGL
-try {
-  const test = document.createElement('canvas');
-  const ok = !!(window.WebGL2RenderingContext && test.getContext('webgl2')) || !!test.getContext('webgl');
-  if (!ok) {
-    fallback.hidden = false;
+// Better WebGL diagnostics
+(function () {
+  try {
+    const c = document.createElement('canvas');
+    const webgl2 = !!c.getContext('webgl2');
+    const webgl1 = !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
+    if (!webgl2 && !webgl1) {
+      if (fallback) fallback.hidden = false;
+      if (loading) loading.hidden = true;
+      console.error('WebGL not available. Check hardware acceleration, extensions, or chrome://gpu');
+    }
+  } catch (e) {
+    if (fallback) fallback.hidden = false;
     if (loading) loading.hidden = true;
+    console.warn('WebGL probe threw:', e);
   }
-} catch (e) {
-  fallback.hidden = false;
-}
+})();
