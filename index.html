@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Neon Gallery — Interactive 3D Showcase</title>
   <meta name="description" content="A minimal WebGL gallery for brand-forward 3D experiences." />
+  <script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+    "three/examples/jsm/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
   <link rel="preload" href="styles.css" as="style" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -107,6 +115,6 @@
     <div class="container">© <span id="year"></span> Neon Gallery</div>
   </footer>
 
-  <script type="module" src="main.js"></script>
+  <script type="module" src="./main.js"></script>
 </body>
 </html>
