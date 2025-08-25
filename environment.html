@@ -22,6 +22,12 @@
       <a-asset-item id="city" src="./assets/models/blocktest.glb"></a-asset-item>
     </a-assets>
 
+    <a-entity geometry="primitive: torus; radius: 1; radiusTubular: 0.03"
+          position="0 2 -4" rotation="90 0 0"
+          material="color: #111111; emissive: #ff00ff; emissiveIntensity: 8">
+</a-entity>
+
+
     <!-- Camera at human height -->
     <a-entity id="rig" position="0 0 0">
       <a-entity id="camera" position="0 1.6 0" camera look-controls wasd-controls></a-entity>
@@ -32,8 +38,8 @@
     <a-entity light="type: directional; intensity: 1.2; color: #8aabff" position="2 4 3"></a-entity>
     <a-entity light="type: point;
                  color: #ff00ff;
-                 intensity: 2.5;
-                 distance: 12"
+                 intensity: 10;
+                 distance: 30"
           position="-22 32 13">
 </a-entity>
 
@@ -43,16 +49,16 @@
 
   <div class="note">WASD to move • drag to look • ESC for mouse</div>
   <script>
-  // Wait for the model entity to finish loading
-  document.querySelector('[gltf-model]').addEventListener('model-loaded', function (e) {
-    const model = e.detail.model; // this is the THREE.Group
-
-    model.traverse((obj) => {
-      if (obj.isMesh && obj.material) {
-        // Force a strong neon emissive (pick any color)
-  
-        obj.material.emissiveIntensity = 10.0; // <-- crank this up
-        obj.material.needsUpdate = true;
+  document.querySelector('[gltf-model]').addEventListener('model-loaded', (e) => {
+    const g = e.detail.model;
+    g.traverse((o) => {
+      if (o.isMesh && o.material && o.material.emissive) {
+        // Only boost if Blender gave it a non-black emissive color.
+        const eCol = o.material.emissive;
+        if ((eCol.r + eCol.g + eCol.b) > 0.001) {
+          o.material.emissiveIntensity = 10.0; // try 10–16 to start
+          o.material.needsUpdate = true;
+        }
       }
     });
   });
