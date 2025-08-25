@@ -17,15 +17,19 @@
 <body>
   <!-- Removed bloom attribute; kept tone mapping -->
   <a-scene background="color: #0b0c10"
-           renderer="colorManagement: true; toneMapping: ACESFilmic;"
-           cursor="rayOrigin: mouse; fuse: false"
-           raycaster="objects: clickable">
+           renderer="colorManagement: true; toneMapping: ACESFilmic;">
     <a-sky src="./assets/textures/skybox1.webp" rotation="0 -90 0"></a-sky>
 
     <!-- Assets -->
     <a-assets>
       <a-asset-item id="city" src="./assets/models/blocktest.glb"></a-asset-item>
     </a-assets>
+
+     <!-- adds a mouse to scene so one can click -->
+    <a-entity id="mouseCursor"
+          cursor="rayOrigin: mouse"
+          raycaster="objects: .clickable; far: 20">
+    </a-entity>
 
     <!-- Test torus (should render bright magenta, no bloom) -->
     <a-entity geometry="primitive: torus; radius: 1; radiusTubular: 0.03"
