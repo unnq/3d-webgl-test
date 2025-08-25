@@ -199,6 +199,17 @@
     font-size: 10px;
     z-index: 2;
   }
+
+  #musicPane {
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;
+}
+
+#musicPane.open {
+  pointer-events: auto;
+  z-index: 1000;
+}
   
   @font-face {
     font-family: 'Roboto Mono';
