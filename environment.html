@@ -204,6 +204,24 @@
     font-family: 'Roboto Mono';
     src: url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
   }
+
+  @media (max-width: 900px) {
+  .pane {
+    width: 95vw;      /* take up almost full viewport width */
+    height: 80vh;     /* scale height to viewport */
+    max-width: 600px; /* optional limit so it doesn’t get too wide on tablets */
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pane {
+    width: 95vw;
+    height: 70vh;
+    max-width: none;
+    max-height: none;
+  }
+}
 </style>
 
   <div class="note">WASD to move • drag to look • ESC for mouse</div>
