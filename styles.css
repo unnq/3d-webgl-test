@@ -82,17 +82,19 @@ body {
   border: 1px solid rgba(0,0,0,0.1);
 }
 
+.controls-panel h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.2rem;
+}
+
 .model-list {
   margin: 0 0 24px 0;
-  padding: 0;
-  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.model-list li {
-  margin-bottom: 8px;
-}
-
-.model-button {
+.card {
   width: 100%;
   padding: 10px;
   text-align: left;
@@ -103,7 +105,7 @@ body {
   font-size: 0.95rem;
 }
 
-.model-button:hover {
+.card:hover {
   border-color: var(--brand);
 }
 
@@ -117,7 +119,7 @@ body {
 /* Viewer */
 .viewer-canvas-wrap {
   position: relative;
-  background: var(--panel);
+  background: #f5f5f5;
   border-radius: 2px;
   border: 1px solid rgba(0,0,0,0.1);
   overflow: hidden;
