@@ -64,8 +64,32 @@
     </a-entity>
 
     <!-- Lights -->
-    <a-entity light="type: ambient; intensity: 0.35; color: #0f1340"></a-entity>
-    <a-entity light="type: directional; intensity: 1.2; color: #8aabff" position="2 4 3"></a-entity>
+    <!-- Softer global fill: sky vs ground -->
+<a-entity light="type: hemisphere;
+                 intensity: 0.35;
+                 color: #8aa7ff;           /* sky tint (cool)   */
+                 groundColor: #1a1a24">    <!-- ground tint (dark) -->
+</a-entity>
+
+<!-- Key: cool 'moonlight' -->
+<a-entity light="type: directional;
+                 color: #8aabff;
+                 intensity: 0.9"
+          position="8 10 6"
+          rotation="-35 30 0">
+</a-entity>
+
+<!-- Fill/Rim: opposite side, warmer and dimmer (street glow) -->
+<a-entity light="type: directional;
+                 color: #ffb36b;
+                 intensity: 0.35"
+          position="-10 6 -8"
+          rotation="-20 -35 0">
+</a-entity>
+
+<!-- Optional: very low ambient just to lift darkest crevices -->
+<a-entity light="type: ambient; color: #223; intensity: 0.15"></a-entity>
+
 
     <!-- Three ceiling point lights along the centerline -->
   <a-entity light="type: point; color: #ffffff; intensity: 4; distance: 12; decay: 2"
