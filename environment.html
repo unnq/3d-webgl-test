@@ -249,8 +249,70 @@
 </style>
 
 <!-- Shop Window Specific Styles -->
+/* Base Pane Styles */
 <style>
-  #shopPane {
+.pane {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform .2s ease;
+  width: min(90vw, 1000px); /* Responsive width with max limit */
+  height: min(85vh, 800px);  /* Responsive height with max limit */
+  background: #c0c0c0;
+  border: 2px solid #dfdfdf;
+  box-shadow: inset -2px -2px #0a0a0a, inset 2px 2px #ffffff;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.pane.open {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.pane-inner {
+  padding: 4px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.pane-inner h3 {
+  background: #000080;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 2px 24px 2px 4px;
+  margin: 0 0 4px 0;
+  position: relative;
+  height: 18px;
+  line-height: 18px;
+}
+
+/* Music Player Specific */
+.player-wrap {
+  width: calc(100% - 8px);
+  height: calc(100% - 120px);
+  margin: 4px;
+  background: #ffffff;
+  border: 2px solid #7f7f7f;
+  box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a;
+}
+
+.player-wrap iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #000000;
+}
+
+.controls {
+  margin: 8px 4px;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* Shop Window Specific */
+#shopPane {
   position: fixed;
   pointer-events: none;
   z-index: -1;
@@ -270,13 +332,15 @@
   box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a;
   overflow-y: auto;
   padding: 8px;
+  box-sizing: border-box;
 }
 
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
-  padding: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .shop-item {
@@ -309,7 +373,6 @@
   display: flex;
   flex-direction: column;
   padding: 4px;
-  font-family: 'Roboto Mono', monospace;
   font-size: 12px;
 }
 
@@ -322,7 +385,41 @@
   color: #444444;
 }
 
-/* Scrollbar styling */
+/* Button Styles */
+.controls button,
+.close {
+  min-width: 75px;
+  padding: 6px 12px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  color: #000000;
+  background: #c0c0c0;
+  border: none;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #7f7f7f, inset 2px 2px #dfdfdf;
+  cursor: pointer;
+}
+
+.controls button:active,
+.close:active {
+  box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #7f7f7f;
+  padding: 7px 11px 5px 13px;
+}
+
+.close {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 16px;
+  min-width: 16px;
+  height: 14px;
+  padding: 0;
+  line-height: 14px;
+  text-align: center;
+  font-size: 10px;
+  z-index: 2;
+}
+
+/* Windows-style Scrollbar */
 .shop-container::-webkit-scrollbar {
   width: 16px;
 }
@@ -352,7 +449,30 @@
 .shop-container::-webkit-scrollbar-button:vertical:end {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M8 12l4-4H4z"/></svg>');
 }
-  </style>
+
+/* Font */
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .pane {
+    width: 95vw;
+    height: 90vh;
+  }
+  
+  .shop-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+  }
+  
+  .item-details {
+    font-size: 11px;
+  }
+}
+</style>
 
   <div class="note">WASD to move • drag to look • ESC for mouse</div>
 
