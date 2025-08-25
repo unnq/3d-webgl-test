@@ -108,25 +108,97 @@
 
 <style>
   .pane {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    transform: translateY(110%);
-    transition: transform .28s ease;
-    background: rgba(12,14,20,.96);
-    border-top: 1px solid #20242f;
-    box-shadow: 0 -20px 60px rgba(0,0,0,.35);
-    padding: 18px 20px; z-index: 9999;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform .2s ease;
+    width: 800px;
+    height: 600px;
+    background: #c0c0c0;
+    border: 2px solid #dfdfdf;
+    box-shadow: inset -2px -2px #0a0a0a, inset 2px 2px #ffffff;
+    z-index: 9999;
+    font-family: 'Roboto Mono', monospace;
   }
-  .pane.open { transform: translateY(0); }
-  .pane-inner { max-width: 900px; margin: 0 auto; color: #cdd3e1; font: 14px/1.5 ui-sans-serif, system-ui; }
-  .player-wrap { aspect-ratio: 16/9; width: 100%; max-width: 720px; background:#0b0c10; border:1px solid #20242f; }
-  .player-wrap iframe { width:100%; height:100%; display:block; }
-  .controls { margin-top: 10px; display:flex; gap:8px; }
-  .controls button, .close {
-    background:#171a23; color:#e9ecf7; border:1px solid #2a3140; border-radius:8px;
-    padding:8px 12px; cursor:pointer;
+  
+  .pane.open {
+    transform: translate(-50%, -50%) scale(1);
   }
-  .controls button:hover, .close:hover { background:#1f2330; }
-  .close { float:right; }
+  
+  .pane-inner {
+    padding: 4px;
+    height: 100%;
+    box-sizing: border-box;
+  }
+  
+  .pane-inner h3 {
+    background: #000080;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px 4px;
+    margin: 0 0 4px 0;
+    position: relative;
+  }
+  
+  .player-wrap {
+    width: calc(100% - 8px);
+    height: calc(100% - 120px);
+    margin: 4px;
+    background: #ffffff;
+    border: 2px solid #7f7f7f;
+    box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a;
+  }
+  
+  .player-wrap iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: #000000;
+  }
+  
+  .controls {
+    margin: 8px 4px;
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+  
+  .controls button,
+  .close {
+    min-width: 75px;
+    padding: 6px 12px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+    color: #000000;
+    background: #c0c0c0;
+    border: none;
+    box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #7f7f7f, inset 2px 2px #dfdfdf;
+    cursor: pointer;
+  }
+  
+  .controls button:active,
+  .close:active {
+    box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #7f7f7f;
+    padding: 7px 11px 5px 13px;
+  }
+  
+  .close {
+    position: absolute;
+    right: 4px;
+    top: 3px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0;
+    line-height: 14px;
+    text-align: center;
+  }
+  
+  @font-face {
+    font-family: 'Roboto Mono';
+    src: url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+  }
 </style>
 
   <div class="note">WASD to move • drag to look • ESC for mouse</div>
