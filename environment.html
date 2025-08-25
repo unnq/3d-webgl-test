@@ -23,6 +23,8 @@
     <!-- Assets -->
     <a-assets>
       <a-asset-item id="city" src="./assets/models/blocktest.glb"></a-asset-item>
+      <a-asset-item id="jukeboxModel" src="./assets/models/90spc.glb"></a-asset-item>
+
     </a-assets>
 
      <!-- adds a mouse to scene so one can click -->
@@ -40,7 +42,7 @@
     <!-- clickable 3D trigger (replace with radio model!!) -->
   <a-entity id="jukebox"
             class="clickable"
-            geometry="primitive: box; depth: 0.4; height: 1.2; width: 0.8"
+            gltf-model="#jukeboxModel"
             position="-2 1 -4"
             material="color: #20222a; emissive: #ff00ff; emissiveIntensity: 1.5">
   </a-entity>
