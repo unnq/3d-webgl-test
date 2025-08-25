@@ -8,12 +8,26 @@ const pauseBtn = document.getElementById('pause');
 document.getElementById('jukebox')?.addEventListener('click', () => {
   pane.classList.add('open');
   pane.setAttribute('aria-hidden', 'false');
+  pane.style.pointerEvents = 'auto';
+  pane.style.zIndex = '1000';
+  if (ytPlayer?.getIframe()) {
+    ytPlayer.getIframe().style.pointerEvents = 'auto';
+  }
 });
 
 // Close on button or ESC
 function closePane() {
   pane.classList.remove('open');
   pane.setAttribute('aria-hidden', 'true');
+  pane.style.pointerEvents = 'none';
+  pane.style.zIndex = '-1';
+  if (ytPlayer?.getIframe()) {
+    ytPlayer.getIframe().style.pointerEvents = 'none';
+  }
+  // Pause video when closing
+  if (ytPlayer?.pauseVideo) {
+    ytPlayer.pauseVideo();
+  }
 }
 closeBtn.addEventListener('click', closePane);
 window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePane(); });
@@ -31,8 +45,15 @@ let ytPlayer;
 window.onYouTubeIframeAPIReady = function () {
   ytPlayer = new YT.Player('ytPlayer', {
     events: {
-      // Optional: start paused so user clicks Play which satisfies autoplay policies.
-      'onReady': (e) => { /* e.target.pauseVideo(); */ }
+      'onReady': (e) => {
+        // Set initial state
+        const iframe = ytPlayer.getIframe();
+        if (iframe) {
+          iframe.style.pointerEvents = 'none';
+        }
+        pane.style.pointerEvents = 'none';
+        pane.style.zIndex = '-1';
+      }
     }
   });
 };
