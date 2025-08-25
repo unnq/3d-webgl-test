@@ -44,7 +44,7 @@
     model.traverse((obj) => {
       if (obj.isMesh && obj.material) {
         // Force a strong neon emissive (pick any color)
-        obj.material.emissive = new THREE.Color(0xff00ff); 
+  
         obj.material.emissiveIntensity = 8.0; // <-- crank this up
         obj.material.needsUpdate = true;
       }
