@@ -1,11 +1,13 @@
 :root {
-  --bg: #ffffff;
-  --panel: #f5f5f5;
+  --bg: #c0c0c0;
+  --panel: #c0c0c0;
   --text: #000000;
   --muted: #666666;
-  --brand: #7aa2ff;
-  --brand-2: #9b7aff;
-  --shadow: 0 10px 30px rgba(0,0,0,0.1);
+  --brand: #000080;
+  --brand-2: #000080;
+  --shadow-window: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #7f7f7f, inset 2px 2px #dfdfdf;
+  --shadow-inset: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a;
+  --border: #dfdfdf;
 }
 
 * { box-sizing: border-box; }
@@ -16,7 +18,7 @@ body {
   margin: 0;
   color: var(--text);
   background: var(--bg);
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .container { 
@@ -28,9 +30,9 @@ body {
 .site-header { 
   position: sticky; 
   top: 0; 
-  backdrop-filter: blur(6px); 
-  background: rgba(255,255,255,0.9); 
-  border-bottom: 1px solid rgba(0,0,0,0.1); 
+  background: var(--bg);
+  border-bottom: 2px solid #7f7f7f;
+  box-shadow: var(--shadow-window);
   z-index: 10; 
 }
 
@@ -38,90 +40,114 @@ body {
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  padding: 14px 0; 
+  padding: 4px 8px; 
 }
 
 .logo { 
-  font-family: "Inter", sans-serif;
+  font-family: 'Roboto Mono', monospace;
   font-weight: 600; 
   text-decoration: none; 
   color: var(--text); 
-  font-size: 1.2rem; 
+  font-size: 1rem; 
+  background: var(--bg);
+  padding: 4px 8px;
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-window);
 }
 
 .logo span { 
-  background: linear-gradient(90deg, var(--brand), var(--brand-2)); 
-  -webkit-background-clip: text; 
-  background-clip: text; 
-  color: transparent; 
+  background: var(--brand);
+  color: #ffffff;
+  padding: 0 4px;
 }
 
 .nav a { 
-  color: var(--muted); 
+  color: var(--text);
   text-decoration: none; 
-  margin-left: 18px; 
+  margin-left: 8px;
+  padding: 4px 8px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-window);
+}
+
+.nav a:active {
+  box-shadow: var(--shadow-inset);
+  padding: 5px 7px 3px 9px;
 }
 
 /* Main Content */
 .main-content {
-  padding: 32px 0;
+  padding: 16px 0;
 }
 
 .two-column {
   display: grid;
   grid-template-columns: 300px 1fr;
-  gap: 32px;
+  gap: 16px;
   align-items: start;
 }
 
 /* Controls Panel */
 .controls-panel {
   background: var(--panel);
-  border-radius: 2px;
-  padding: 20px;
-  border: 1px solid rgba(0,0,0,0.1);
+  padding: 8px;
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-window);
 }
 
 .controls-panel h2 {
-  margin: 0 0 20px 0;
-  font-size: 1.2rem;
+  background: var(--brand);
+  color: #ffffff;
+  margin: -8px -8px 8px -8px;
+  padding: 4px 8px;
+  font-size: 14px;
 }
 
 .model-list {
-  margin: 0 0 24px 0;
+  margin: 0 0 16px 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .card {
   width: 100%;
-  padding: 10px;
+  padding: 8px;
   text-align: left;
-  background: white;
-  border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 2px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-window);
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 12px;
+  font-family: 'Roboto Mono', monospace;
 }
 
-.card:hover {
-  border-color: var(--brand);
+.card:active {
+  box-shadow: var(--shadow-inset);
+  padding: 9px 7px 7px 9px;
 }
 
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  color: var(--muted);
+  gap: 8px;
+  color: var(--text);
+}
+
+.controls label {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Viewer */
 .viewer-canvas-wrap {
   position: relative;
-  background: #f5f5f5;
-  border-radius: 2px;
-  border: 1px solid rgba(0,0,0,0.1);
+  background: #ffffff;
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-window);
   overflow: hidden;
 }
 
@@ -136,8 +162,9 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(255,255,255,0.9);
+  background: var(--bg);
   font-weight: 600;
+  font-size: 12px;
 }
 
 .fallback {
@@ -147,6 +174,28 @@ body {
   place-items: center;
   padding: 20px;
   text-align: center;
+  font-size: 12px;
+}
+
+/* Checkbox Styling */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  background: #ffffff;
+  border: 2px solid #7f7f7f;
+  box-shadow: var(--shadow-inset);
+  position: relative;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked::before {
+  content: '✓';
+  position: absolute;
+  left: 1px;
+  top: -2px;
+  font-size: 11px;
 }
 
 /* Responsive */
@@ -154,4 +203,9 @@ body {
   .two-column {
     grid-template-columns: 1fr;
   }
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 }
