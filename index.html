@@ -1,10 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Interactive 3D Showcase</title>
-  <meta name="description" content="A minimal WebGL gallery for brand-forward 3D experiences." />
+  <title>3D Model Viewer</title>
   <script type="importmap">
 {
   "imports": {
@@ -13,7 +12,6 @@
   }
 }
 </script>
-  <link rel="preload" href="styles.css" as="style" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -27,55 +25,32 @@
     </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <div class="container hero-inner">
-        <div class="hero-copy">
-          <h1>Test Hero Section</h1>
-          <p>Blend classic web structure with tasteful, high‑performance 3D. Perfect for creative businesses and studios. Need some hero art.</p>
-          <a href="#viewer" class="button">Goto 3D Viewer</a>
-        </div>
-        <div class="hero-visual" aria-hidden="true">
-          <!-- Decorative gradient / image; 3D is below in #viewer -->
-        </div>
-      </div>
-    </section>
+  <main class="main-content">
+    <div class="container">
+      <div class="two-column">
+        <div class="controls-panel">
+          <ul class="model-list">
+            <li>
+              <button class="model-button" data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb" data-name="BoomBox" data-env="https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.hdr">
+                BoomBox
+              </button>
+            </li>
+            <li>
+              <button class="model-button" data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb" data-name="Damaged Helmet" data-env="https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.hdr">
+                Damaged Helmet
+              </button>
+            </li>
+            <li>
+              <button class="model-button" data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb" data-name="Avocado" data-env="https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.hdr">
+                Avocado
+              </button>
+            </li>
+          </ul>
 
-    <section id="work" class="grid">
-      <div class="container">
-        <h2>Test Pieces</h2>
-        <p class="lede">Click a card to load the piece into the 3D viewer.</p>
-        <div class="cards" id="galleryCards">
-          <!-- Demo cards using remote models so this runs immediately on GH Pages -->
-          <button class="card"
-            data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb"
-            data-name="BoomBox"
-            data-env="https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.hdr">
-            <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&auto=format&fit=crop" alt="BoomBox">
-            <div class="label"><strong>BoomBox</strong><span>glTF sample</span></div>
-          </button>
-
-          <button class="card" data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb" data-name="Damaged Helmet" data-env="https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.hdr">
-            <img src="https://images.unsplash.com/photo-1520975922215-2309d2f1d4ee?w=800" alt="Damaged Helmet" />
-            <div class="label"><strong>Damaged Helmet</strong><span>glTF sample</span></div>
-          </button>
-
-          <button class="card" data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb" data-name="Avocado" data-env="https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.hdr">
-            <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800" alt="Avocado" />
-            <div class="label"><strong>Avocado</strong><span>glTF sample</span></div>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section id="viewer" class="viewer">
-      <div class="container viewer-inner">
-        <div class="viewer-ui">
-          <h2 id="modelTitle">3D Viewer</h2>
           <div class="controls">
             <label>
               <input type="checkbox" id="toggleEnv" checked />
-              Env lighting
+              Environment lighting
             </label>
             <label>
               <input type="checkbox" id="toggleRotate" />
@@ -86,24 +61,18 @@
               Wireframe
             </label>
           </div>
-          <p class="hint">Tip: drag to orbit, scroll to zoom, right‑drag to pan.</p>
         </div>
+
         <div class="viewer-canvas-wrap">
           <canvas id="webgl"></canvas>
           <div id="fallback" class="fallback" hidden>
-            <p><strong>WebGL unavailable.</strong> You can still view images and videos above. Try a modern browser.</p>
+            <p><strong>WebGL unavailable.</strong> Please try a modern browser.</p>
           </div>
           <div id="loading" class="loading" aria-live="polite">Loading…</div>
         </div>
       </div>
-    </section>
-
-    
+    </div>
   </main>
-
-  <footer class="site-footer">
-    <div class="container">© <span id="year"></span> Alter Ego Group</div>
-  </footer>
 
   <script type="module" src="./main.js"></script>
 </body>
