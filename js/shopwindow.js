@@ -25,14 +25,14 @@ window.addEventListener('keydown', (e) => {
 
 // Populate shop items (this could later be replaced with dynamic data)
 const shopItems = [
-  { name: 'T-Shirt 1', price: '$25.00', image: './assets/shop/placeholder1.jpg' },
-  { name: 'Hoodie', price: '$45.00', image: './assets/shop/placeholder2.jpg' },
-  { name: 'Cap', price: '$20.00', image: './assets/shop/placeholder3.jpg' },
-  { name: 'Sticker Pack', price: '$10.00', image: './assets/shop/placeholder4.jpg' },
-  { name: 'Poster', price: '$15.00', image: './assets/shop/placeholder5.jpg' },
-  { name: 'Mug', price: '$12.00', image: './assets/shop/placeholder6.jpg' },
-  { name: 'Pin Set', price: '$8.00', image: './assets/shop/placeholder7.jpg' },
-  { name: 'Tote Bag', price: '$18.00', image: './assets/shop/placeholder8.jpg' }
+  { name: 'T-Shirt 1', price: '$25.00', image: './assets/shop/tshirt1.jpg' },
+  { name: 'Hoodie', price: '$45.00', image: './assets/shop/hoodie1.jpg' },
+  { name: 'Cap', price: '$20.00', image: './assets/shop/cap1.jpg' },
+  { name: 'Sticker Pack', price: '$10.00', image: './assets/shop/stickerpack1.jpg' },
+  { name: 'Poster', price: '$15.00', image: './assets/shop/poster1.jpg' },
+  { name: 'Mug', price: '$12.00', image: './assets/shop/mug1.jpg' },
+  { name: 'Pin Set', price: '$8.00', image: './assets/shop/pin1.jpg' },
+  { name: 'Tote Bag', price: '$18.00', image: './assets/shop/totebag1.jpg' }
 ];
 
 // Create shop grid on load
