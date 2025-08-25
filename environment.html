@@ -17,7 +17,9 @@
 <body>
   <!-- Removed bloom attribute; kept tone mapping -->
   <a-scene background="color: #0b0c10"
-           renderer="colorManagement: true; toneMapping: ACESFilmic;">
+           renderer="colorManagement: true; toneMapping: ACESFilmic;"
+           cursor="rayOrigin: mouse; fuse: false"
+           raycaster="objects: clickable"
     <a-sky src="./assets/textures/skybox1.webp" rotation="0 -90 0"></a-sky>
 
     <!-- Assets -->
@@ -30,6 +32,14 @@
               position="0 2 -4" rotation="90 0 0"
               material="color: #111111; emissive: #ff00ff; emissiveIntensity: 8">
     </a-entity>
+
+    <!-- clickable 3D trigger (replace with radio model!!) -->
+  <a-entity id="jukebox"
+            class="clickable"
+            geometry="primitive: box; depth: 0.4; height: 1.2; width: 0.8"
+            position="-2 1 -4"
+            material="color: #20222a; emissive: #ff00ff; emissiveIntensity: 1.5">
+  </a-entity>
 
     <!-- Camera at human height -->
     <a-entity id="rig" position="0 0 0">
@@ -48,6 +58,53 @@
     <!-- Environment GLB -->
     <a-entity gltf-model="#city" position="0 0 0" scale="1 1 1"></a-entity>
   </a-scene>
+
+  <!-- Music overlay -->
+<div id="musicPane" class="pane" aria-hidden="true">
+  <div class="pane-inner">
+    <button id="closePane" class="close">✕</button>
+    <h3>Now Playing</h3>
+
+    <!-- YouTube playlist embed -->
+    <div class="player-wrap">
+      <iframe id="ytPlayer"
+              width="560" height="315"
+              src="https://www.youtube.com/embed?list=PL-GodieasL9Y9mgjSdQoD46gx1Ni0l1Mf&listType=playlist&enablejsapi=1"
+              title="YouTube playlist player"
+              frameborder="0"
+              allow="autoplay; encrypted-media"
+              allowfullscreen></iframe>
+    </div>
+
+    <div class="controls">
+      <button id="play">Play</button>
+      <button id="pause">Pause</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pane {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    transform: translateY(110%);
+    transition: transform .28s ease;
+    background: rgba(12,14,20,.96);
+    border-top: 1px solid #20242f;
+    box-shadow: 0 -20px 60px rgba(0,0,0,.35);
+    padding: 18px 20px; z-index: 9999;
+  }
+  .pane.open { transform: translateY(0); }
+  .pane-inner { max-width: 900px; margin: 0 auto; color: #cdd3e1; font: 14px/1.5 ui-sans-serif, system-ui; }
+  .player-wrap { aspect-ratio: 16/9; width: 100%; max-width: 720px; background:#0b0c10; border:1px solid #20242f; }
+  .player-wrap iframe { width:100%; height:100%; display:block; }
+  .controls { margin-top: 10px; display:flex; gap:8px; }
+  .controls button, .close {
+    background:#171a23; color:#e9ecf7; border:1px solid #2a3140; border-radius:8px;
+    padding:8px 12px; cursor:pointer;
+  }
+  .controls button:hover, .close:hover { background:#1f2330; }
+  .close { float:right; }
+</style>
 
   <div class="note">WASD to move • drag to look • ESC for mouse</div>
 
@@ -70,5 +127,57 @@
       });
     })();
   </script>
+
+<script>
+  // Basic open/close
+  const pane = document.getElementById('musicPane');
+  const closeBtn = document.getElementById('closePane');
+  const playBtn = document.getElementById('play');
+  const pauseBtn = document.getElementById('pause');
+
+  // Open when the 3D jukebox is clicked
+  document.getElementById('jukebox')?.addEventListener('click', () => {
+    pane.classList.add('open');
+    pane.setAttribute('aria-hidden', 'false');
+  });
+
+  // Close on button or ESC
+  function closePane() {
+    pane.classList.remove('open');
+    pane.setAttribute('aria-hidden', 'true');
+  }
+  closeBtn.addEventListener('click', closePane);
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePane(); });
+
+  // ---- YouTube Player API (so play/pause work reliably) ----
+  // Load API script once
+  (function loadYT(){
+    if (window.YT) return;
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  })();
+
+  let ytPlayer;
+  window.onYouTubeIframeAPIReady = function () {
+    ytPlayer = new YT.Player('ytPlayer', {
+      events: {
+        // Optional: start paused so user clicks Play which satisfies autoplay policies.
+        'onReady': (e) => { /* e.target.pauseVideo(); */ }
+      }
+    });
+  };
+
+  // Buttons
+  playBtn.addEventListener('click', () => { ytPlayer && ytPlayer.playVideo(); });
+  pauseBtn.addEventListener('click', () => { ytPlayer && ytPlayer.pauseVideo(); });
+
+  // Stop audio when the pane closes
+  pane.addEventListener('transitionend', () => {
+    if (pane.classList.contains('open')) return;
+    ytPlayer && ytPlayer.pauseVideo();
+  });
+</script>
+  
 </body>
 </html>
