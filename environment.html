@@ -25,6 +25,8 @@
     <a-assets>
       <a-asset-item id="city" src="./assets/models/blocktest.glb"></a-asset-item>
       <a-asset-item id="jukeboxModel" src="./assets/models/90spc.glb"></a-asset-item>
+      <a-asset-item id="woodentable" src="./assets/models/woodentable.glb"></a-asset-item>
+      <a-asset-item id="sonyradio" src="./assets/models/sonyradio.glb"></a-asset-item>
 
     </a-assets>
 
@@ -36,13 +38,15 @@
 
     
 
-    <!-- clickable 3D trigger (replace with radio model!!) -->
+    <!-- clickable 3D trigger for music pc -->
   <a-entity id="jukebox"
             class="clickable"
             gltf-model="#jukeboxModel"
-            position=".3 0.05 -3"
+            position="-5 1 3"
             scale=".25 .25 .25">
   </a-entity>
+
+    
 
     <!-- clickable shop link, brings up pane -->
 <a-entity id="shoplink"
