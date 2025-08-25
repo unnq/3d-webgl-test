@@ -5,26 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>A-Frame Environment Test</title>
 
-  <!-- Use module builds that match the showcase -->
-  <script type="importmap">
-  {
-    "imports": {
-      "aframe": "https://aframe.io/releases/1.7.1/aframe.module.js",
-      "three": "https://cdn.jsdelivr.net/npm/super-three@0.173.5/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/super-three@0.173.5/examples/jsm/"
-    }
-  }
-  </script>
-
-  <!-- Boot A-Frame (ESM) and register the bloom component (ESM) -->
-  <script type="module">
-    import AFRAME from 'aframe';
-    // same bloom script used by the showcase; registers AFRAME.components.bloom
-    import 'https://aframe.io/examples/showcase/post-processing/bloom.js';
-
-    // (optional) quick console verify
-    console.log('bloom component:', typeof AFRAME.components.bloom);
-  </script>
+  <!-- Plain (non-module) A-Frame build -->
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 
   <style>
     html,body { margin:0; height:100%; background:#0b0c10; }
@@ -33,8 +15,9 @@
   </style>
 </head>
 <body>
-  <a-scene background="color: #0b0c10" renderer="colorManagement: true; toneMapping: ACESFilmic;"
-           bloom="strength: 3; threshold: 0; radius: 1">
+  <!-- Removed bloom attribute; kept tone mapping -->
+  <a-scene background="color: #0b0c10"
+           renderer="colorManagement: true; toneMapping: ACESFilmic;">
     <a-sky src="./assets/textures/skybox1.webp" rotation="0 -90 0"></a-sky>
 
     <!-- Assets -->
@@ -42,11 +25,11 @@
       <a-asset-item id="city" src="./assets/models/blocktest.glb"></a-asset-item>
     </a-assets>
 
+    <!-- Test torus (should render bright magenta, no bloom) -->
     <a-entity geometry="primitive: torus; radius: 1; radiusTubular: 0.03"
-          position="0 2 -4" rotation="90 0 0"
-          material="color: #111111; emissive: #ff00ff; emissiveIntensity: 8">
-</a-entity>
-
+              position="0 2 -4" rotation="90 0 0"
+              material="color: #111111; emissive: #ff00ff; emissiveIntensity: 8">
+    </a-entity>
 
     <!-- Camera at human height -->
     <a-entity id="rig" position="0 0 0">
@@ -54,34 +37,38 @@
     </a-entity>
 
     <!-- Lights -->
-    <a-entity light="type: ambient; intensity: .5; color: #0f1340"></a-entity>
+    <a-entity light="type: ambient; intensity: 0.35; color: #0f1340"></a-entity>
     <a-entity light="type: directional; intensity: 1.2; color: #8aabff" position="2 4 3"></a-entity>
-    <a-entity light="type: point;
-                 color: #ff00ff;
-                 intensity: 10;
-                 distance: 30"
-          position="-22 32 13">
-</a-entity>
+
+    <!-- Example point light near your sign (adjust to taste / scale) -->
+    <a-entity light="type: point; color: #ff00ff; intensity: 14; distance: 60"
+              position="-22 32 14">
+    </a-entity>
 
     <!-- Environment GLB -->
     <a-entity gltf-model="#city" position="0 0 0" scale="1 1 1"></a-entity>
   </a-scene>
 
   <div class="note">WASD to move • drag to look • ESC for mouse</div>
+
+  <!-- Keep emissive boost for meshes that already have non-black emissive color -->
   <script>
-  document.querySelector('[gltf-model]').addEventListener('model-loaded', (e) => {
-    const g = e.detail.model;
-    g.traverse((o) => {
-      if (o.isMesh && o.material && o.material.emissive) {
-        // Only boost if Blender gave it a non-black emissive color.
-        const eCol = o.material.emissive;
-        if ((eCol.r + eCol.g + eCol.b) > 0.001) {
-          o.material.emissiveIntensity = 10.0; // try 10–16 to start
-          o.material.needsUpdate = true;
-        }
-      }
-    });
-  });
-</script>
+    (function () {
+      const el = document.querySelector('[gltf-model]');
+      if (!el) return;
+      el.addEventListener('model-loaded', (e) => {
+        const g = e.detail.model;
+        g.traverse((o) => {
+          if (o.isMesh && o.material && o.material.emissive) {
+            const c = o.material.emissive;
+            if ((c.r + c.g + c.b) > 0.001) {
+              o.material.emissiveIntensity = 10.0; // tweak 6–12 to taste
+              o.material.needsUpdate = true;
+            }
+          }
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
