@@ -4,8 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>A-Frame Environment Test</title>
-  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-  <script src="https://aframe.io/examples/showcase/post-processing/bloom.js"></script>
+
+  <!-- Use module builds that match the showcase -->
+  <script type="importmap">
+  {
+    "imports": {
+      "aframe": "https://aframe.io/releases/1.7.1/aframe.module.js",
+      "three": "https://cdn.jsdelivr.net/npm/super-three@0.173.5/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/super-three@0.173.5/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- Boot A-Frame (ESM) and register the bloom component (ESM) -->
+  <script type="module">
+    import AFRAME from 'aframe';
+    // same bloom script used by the showcase; registers AFRAME.components.bloom
+    import 'https://aframe.io/examples/showcase/post-processing/bloom.js';
+
+    // (optional) quick console verify
+    console.log('bloom component:', typeof AFRAME.components.bloom);
+  </script>
 
   <style>
     html,body { margin:0; height:100%; background:#0b0c10; }
