@@ -137,9 +137,11 @@
     color: #ffffff;
     font-size: 14px;
     font-weight: bold;
-    padding: 2px 4px;
+    padding: 2px 24px 2px 4px; /* Added right padding to make room for close button */
     margin: 0 0 4px 0;
     position: relative;
+    height: 18px; /* Fixed height for title bar */
+    line-height: 18px; /* Center text vertically */
   }
   
   .player-wrap {
@@ -186,13 +188,15 @@
   
   .close {
     position: absolute;
-    right: 4px;
-    top: 3px;
-    min-width: 14px;
+    right: 2px;
+    top: 2px;
+    width: 16px;
+    min-width: 16px;
     height: 14px;
     padding: 0;
     line-height: 14px;
     text-align: center;
+    font-size: 10px;
   }
   
   @font-face {
