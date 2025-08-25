@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
     itemElement.className = 'shop-item';
     itemElement.innerHTML = `
       <div class="shop-item-inner">
-        <div class="item-image"></div>
+        <div class="item-image"><img src="${item.image}" alt="${item.name}" /></div>
         <div class="item-details">
           <span class="item-name">${item.name}</span>
           <span class="item-price">${item.price}</span>
