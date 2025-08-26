@@ -19,7 +19,7 @@
   <a-scene background="color: #0b0c10"
            cam-hud
            renderer="colorManagement: true; toneMapping: ACESFilmic;">
-    <a-sky src="./assets/textures/skybox3.webp" rotation="0 -90 0"></a-sky>
+    <a-sky id="sky" src="./assets/textures/skybox3.webp" rotation="0 -90 0"></a-sky>
 
     <!-- Assets -->
     <a-assets>
@@ -152,6 +152,54 @@
     <div class="shop-container">
       <div id="shopGrid" class="shop-grid">
         <!-- Shop items will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Skybox Editor Overlay -->
+<div id="skyPane" class="pane" aria-hidden="true">
+  <div class="pane-inner">
+    <button id="closeSkyPane" class="close">✕</button>
+    <h3>Skybox Editor</h3>
+
+    <div class="sky-container">
+      <div class="sky-grid">
+        <div class="field">
+          <label for="skyPreset">Preset</label>
+          <select id="skyPreset">
+            <option value="">— Select —</option>
+            <!-- add/rename to match your files -->
+            <option value="./assets/textures/skybox1.webp">PS1 Sky</option>
+            <option value="./assets/textures/skybox2.webp">Stars</option>
+            <option value="./assets/textures/skybox3.webp">Dusk</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="skyUpload">Upload (image)</label>
+          <input type="file" id="skyUpload" accept="image/*">
+        </div>
+
+        <div class="field">
+          <label for="skyRot">Rotation (Y)</label>
+          <div class="range-wrap">
+            <input type="range" id="skyRot" min="-180" max="180" step="1" value="-90">
+            <span id="rotVal">-90°</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Preview</label>
+          <div class="sky-thumb">
+            <img id="skyThumb" alt="Sky preview">
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button id="applySky">Apply</button>
+          <button id="resetSky">Reset</button>
+        </div>
       </div>
     </div>
   </div>
@@ -523,6 +571,65 @@
 }
 </style>
 
+  <style>
+/* ===== Skybox Editor (Win95 look, matches Shop) ===== */
+#skyPane { position: fixed; pointer-events: none; z-index: -1; }
+#skyPane.open { pointer-events: auto; z-index: 1000; }
+
+.sky-container {
+  width: calc(100% - 8px);
+  height: calc(100% - 60px);
+  margin: 4px;
+  background: #ffffff;
+  border: 2px solid #7f7f7f;
+  box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a;
+  overflow: auto;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.sky-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 12px; color: #000; font-weight: bold;
+}
+
+.field select, .field input[type="file"], .field input[type="range"] {
+  background: #c0c0c0; color: #000; border: none;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff,
+              inset -2px -2px #7f7f7f, inset 2px 2px #dfdfdf;
+  padding: 6px; font-family: 'Roboto Mono', monospace; font-size: 12px;
+}
+
+.range-wrap { display: flex; align-items: center; gap: 8px; }
+#rotVal { font-size: 12px; color: #333; min-width: 48px; text-align: right; }
+
+.sky-thumb {
+  background: #c0c0c0;
+  border: 2px solid #dfdfdf;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.sky-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.buttons { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: center; }
+
+/* Reuse your button + close styles (already defined) */
+
+/* Responsive */
+@media (max-width: 700px) {
+  .sky-grid { grid-template-columns: 1fr; }
+}
+</style>
+
 
   <div class="note">WASD to move • drag to look • ESC for mouse</div>
 
@@ -531,6 +638,7 @@
   <script src="js/model-emissive.js"></script>
   <script src="js/music-controls.js"></script>
   <script src="js/shopwindow.js"></script>
+  <script src="./skyboxeditor.js"></script>
   
 </body>
 </html>
