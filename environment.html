@@ -7,6 +7,7 @@
 
   <!-- Plain (non-module) A-Frame build -->
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <script src="js/hover-highlight.js"></script>
 
   <style>
     html,body { margin:0; height:100%; background:#0b0c10; }
@@ -44,7 +45,8 @@
             gltf-model="#jukeboxModel"
             position="-.5 .9 3.3"
             rotation="0 180 0"
-            scale=".25 .25 .25">
+            scale=".25 .25 .25"
+            hover-highlight="color:#7fffd4; scale:1.03; emissiveIntensity:1.2">
   </a-entity>
 
     
@@ -55,7 +57,8 @@
           rotation="0 90 0"
           geometry="primitive: plane; width: 1.6; height: 0.9"
           material="shader: flat; src: ./assets/textures/sentimentslogonew.jpg"
-          class="clickable">
+          class="clickable"
+          hover-highlight>
 </a-entity>
 
      <!-- clickable skybox editor, brings up pane -->
@@ -64,7 +67,8 @@
           rotation="0 34 0"
           geometry="primitive: plane; width: .5; height: 0.3"
           material="color: #fff; opacity: 0; transparent: true;"
-          class="clickable">
+          class="clickable"
+          hover-highlight>
 </a-entity>
 
     <!-- Camera at human height -->
